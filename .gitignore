@@ -40,3 +40,6 @@ test.nro
 test.uf2
 test.wasm
 wasm.wasm
+
+*.uf2
+*.elf
