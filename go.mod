@@ -14,7 +14,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-tty v0.0.4
 	github.com/sigurn/crc16 v0.0.0-20211026045750-20ab5afb07e3
-	github.com/stretchr/testify v1.8.4
 	github.com/tetratelabs/wazero v1.6.0
 	go.bug.st/serial v1.6.0
 	golang.org/x/net v0.26.0
@@ -27,14 +26,12 @@ require (
 require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/creack/goselect v0.1.2 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/text v0.16.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
