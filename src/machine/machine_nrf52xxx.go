@@ -235,14 +235,11 @@ func (spi *SPI) Configure(config SPIConfig) error {
 	// Disable bus to configure it
 	spi.Bus.ENABLE.Set(nrf.SPIM_ENABLE_ENABLE_Disabled)
 
-	// Pick a default frequency.
-	if config.Frequency == 0 {
-		config.Frequency = 4000000 // 4MHz
-	}
-
 	// set frequency
 	var freq uint32
 	switch {
+	case config.Frequency == 0: // default MCU SPI speed
+		freq = nrf.SPIM_FREQUENCY_FREQUENCY_M4
 	case config.Frequency >= 8000000:
 		freq = nrf.SPIM_FREQUENCY_FREQUENCY_M8
 	case config.Frequency >= 4000000:
