@@ -338,6 +338,16 @@ func (spi *SPI) Tx(w, r []byte) error {
 	return nil
 }
 
+// Read implements [io.Reader]. And reads as many bytes as the given buffer is long
+func (spi *SPI) Read(r []byte) (int, error) {
+	return len(r), spi.Tx(nil, r)
+}
+
+// Write implements [io.Writer]. And writes as long as there are bytes in w.
+func (spi *SPI) Write(w []byte) (int, error) {
+	return len(w), spi.Tx(w, nil)
+}
+
 // PWM is one PWM peripheral, which consists of a counter and multiple output
 // channels (that can be connected to actual pins). You can set the frequency
 // using SetPeriod, but only for all the channels in this PWM peripheral at
