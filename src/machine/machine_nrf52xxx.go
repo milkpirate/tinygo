@@ -29,27 +29,6 @@ var (
 
 type SPIMode uint8
 
-func (m SPIMode) ApplyTo(conf uint32) uint32 {
-	// See:
-	// - https://de.wikipedia.org/wiki/Serial_Peripheral_Interface#/media/Datei:SPI_timing_diagram2.svg
-	// - https://docs-be.nordicsemi.com/bundle/ps_nrf52840/attach/nRF52840_PS_v1.11.pdf?_LANG=enus page 716, table 43
-	switch m {
-	case SPI_MODE_CPHA0_CPOL0:
-		conf &^= (nrf.SPIM_CONFIG_CPOL_ActiveHigh << nrf.SPIM_CONFIG_CPOL_Pos)
-		conf &^= (nrf.SPIM_CONFIG_CPHA_Leading << nrf.SPIM_CONFIG_CPHA_Pos)
-	case SPI_MODE_CPHA1_CPOL0:
-		conf &^= (nrf.SPIM_CONFIG_CPOL_ActiveHigh << nrf.SPIM_CONFIG_CPOL_Pos)
-		conf |= (nrf.SPIM_CONFIG_CPHA_Trailing << nrf.SPIM_CONFIG_CPHA_Pos)
-	case SPI_MODE_CPHA1_CPOL1:
-		conf |= (nrf.SPIM_CONFIG_CPOL_ActiveLow << nrf.SPIM_CONFIG_CPOL_Pos)
-		conf &^= (nrf.SPIM_CONFIG_CPHA_Leading << nrf.SPIM_CONFIG_CPHA_Pos)
-	case SPI_MODE_CPHA0_CPOL1:
-		conf |= (nrf.SPIM_CONFIG_CPOL_ActiveLow << nrf.SPIM_CONFIG_CPOL_Pos)
-		conf |= (nrf.SPIM_CONFIG_CPHA_Trailing << nrf.SPIM_CONFIG_CPHA_Pos)
-	}
-	return conf
-}
-
 func CPUFrequency() uint32 {
 	return 64000000
 }
@@ -227,7 +206,7 @@ type SPIConfig struct {
 	SDO       Pin
 	SDI       Pin
 	LSBFirst  bool
-	Mode      SPIMode
+	Mode      uint8
 }
 
 // Configure is intended to set up the SPI interface.
@@ -264,8 +243,24 @@ func (spi *SPI) Configure(config SPIConfig) error {
 		conf = (nrf.SPIM_CONFIG_ORDER_LsbFirst << nrf.SPIM_CONFIG_ORDER_Pos)
 	}
 
-	// set mode
-	conf = config.Mode.ApplyTo(conf)
+	// set mode, see:
+	// - https://de.wikipedia.org/wiki/Serial_Peripheral_Interface#/media/Datei:SPI_timing_diagram2.svg
+	// - https://docs-be.nordicsemi.com/bundle/ps_nrf52840/attach/nRF52840_PS_v1.11.pdf?_LANG=enus page 716, table 43
+	switch SPIMode(config.Mode) {
+	case SPI_MODE_CPHA0_CPOL0:
+		conf &^= (nrf.SPIM_CONFIG_CPOL_ActiveHigh << nrf.SPIM_CONFIG_CPOL_Pos)
+		conf &^= (nrf.SPIM_CONFIG_CPHA_Leading << nrf.SPIM_CONFIG_CPHA_Pos)
+	case SPI_MODE_CPHA1_CPOL0:
+		conf &^= (nrf.SPIM_CONFIG_CPOL_ActiveHigh << nrf.SPIM_CONFIG_CPOL_Pos)
+		conf |= (nrf.SPIM_CONFIG_CPHA_Trailing << nrf.SPIM_CONFIG_CPHA_Pos)
+	case SPI_MODE_CPHA1_CPOL1:
+		conf |= (nrf.SPIM_CONFIG_CPOL_ActiveLow << nrf.SPIM_CONFIG_CPOL_Pos)
+		conf &^= (nrf.SPIM_CONFIG_CPHA_Leading << nrf.SPIM_CONFIG_CPHA_Pos)
+	case SPI_MODE_CPHA0_CPOL1:
+		conf |= (nrf.SPIM_CONFIG_CPOL_ActiveLow << nrf.SPIM_CONFIG_CPOL_Pos)
+		conf |= (nrf.SPIM_CONFIG_CPHA_Trailing << nrf.SPIM_CONFIG_CPHA_Pos)
+	}
+
 	spi.Bus.CONFIG.Set(conf)
 
 	// set pins
